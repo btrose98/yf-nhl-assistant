@@ -120,7 +120,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+auth/.env
 .venv
 env/
 venv/
@@ -153,3 +153,4 @@ dmypy.json
 cython_debug/
 
 .idea
+auth
