@@ -1,14 +1,13 @@
 import csv
 import json
+import os
 from pathlib import Path
 
 from yfpy.query import YahooFantasySportsQuery
 
-# Set directory location of private.json for authentication
 project_dir = Path(__file__).parent.parent
 auth_dir = project_dir / "auth"
-
-
+artifacts_dir = project_dir / "artifacts"
 
 def main():
 
@@ -38,18 +37,7 @@ def main():
     get_available_free_agents(yahoo_query, league_key)
 
 
-
-#     fetch current team
-
-# fetch current free agents
-
-# make comparisons
-
-# display ordered list of players
-
-
 def get_my_current_team(yahoo_query, team_id, chosen_week):
-    # Fetch the team roster for the specified week
     team_roster = yahoo_query.get_team_roster_by_week(team_id, chosen_week)
     for player in team_roster:
         print(player)
@@ -70,13 +58,14 @@ def get_available_free_agents(yahoo_query, league_key):
 
     # print(f"available free agents: {available_free_agents}")
 
-    # Write the available free agents to a CSV file
-    with open('available_free_agents.csv', 'w', newline='', encoding='utf-8') as file:
+    if not os.path.exists(artifacts_dir):
+        os.makedirs(artifacts_dir)
+
+    csv_file_path = os.path.join(artifacts_dir, 'available_free_agents.csv')
+    with open(csv_file_path, 'w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        # Write the headers
         writer.writerow(["Player Name", "Player Key", "Status", "Position", "Team"])
 
-        # Write player data
         for player in available_free_agents:
             writer.writerow([getattr(player, "name").full, getattr(player, "player_key"),
                              getattr(player, "status", "N/A"), getattr(player, "primary_position"),

@@ -155,3 +155,4 @@ cython_debug/
 .idea
 auth
 src/available_free_agents.csv
+artifacts
