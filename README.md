@@ -6,5 +6,6 @@ The goal of this project is to provide users with the best free agent pickup opt
 
 Notes:
 
+    - Wrapper used for the yahoo fantasy api: https://github.com/uberfastman/yfpy
     - The regular yahoo api (https://developer.yahoo.com/fantasysports/guide/) has information regarding
         *FILTERING* for players. cntrl + f "Filter" subheading
