@@ -3,6 +3,8 @@ import json
 import os
 from pathlib import Path
 
+import requests
+from bs4 import BeautifulSoup
 from yfpy.query import YahooFantasySportsQuery
 
 project_dir = Path(__file__).parent.parent
@@ -40,9 +42,46 @@ def main():
 
     # get_my_current_team(yahoo_query, team_id, chosen_week)
     # get_available_free_agents(yahoo_query, league_key)
-    print(f"scoreboard: \n{yahoo_query.get_league_scoreboard_by_week(chosen_week)}")
+    # print(f"scoreboard: \n{yahoo_query.get_league_scoreboard_by_week(chosen_week)}")
 
 ######################################################################
+
+def get_teams_with_most_games():
+    url = 'https://hashtaghockey.com/advanced-nhl-schedule-grid'
+    response = requests.get(url)
+    html = response.content
+
+    soup = BeautifulSoup(html, 'html.parser')
+
+    schedule_table = soup.find('table')
+    rows = schedule_table.find_all('tr')[2:]  # Skip the header and games(by day) row
+
+    team_games_count = {}
+    teams_with_most_games = []
+
+    for row in rows:
+        team_name_cell = row.find('td', class_='text-left mw200')
+        if team_name_cell:
+            team_name = team_name_cell.text.strip()
+
+            games_cell = row.find_all('td')[1] # number of games cell
+            games_text = games_cell.text.strip()
+
+            # Check if the games_text is a digit and not empty
+            if games_text.isdigit():
+                games_count = int(games_text)
+                team_games_count[team_name] = games_count
+            else:
+                print(f"Skipping {team_name} as it doesn't have a valid games count.")
+
+    if team_games_count:
+        most_games = max(team_games_count.values())
+        teams_with_most_games = [team for team, games in team_games_count.items() if games == most_games]
+        print(f"Teams with the most games ({most_games}) this week:\n{teams_with_most_games}")
+    else:
+        print("No valid games count found for any team.")
+
+    return teams_with_most_games
 
 def get_league_settings(yahoo_query):
     league_settings = yahoo_query.get_league_settings()
